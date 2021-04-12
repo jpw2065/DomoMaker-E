@@ -17,6 +17,26 @@ var handleDomo = function handleDomo(e) {
   return false;
 };
 
+var deleteDomo = function deleteDomo(e) {
+  e.preventDefault();
+  $("#domoMessage").animate({
+    width: 'hide'
+  }, 350);
+  var button = $(e.target);
+  var id = button.data('id');
+  var csrf = $("#csrfToken").val();
+  sendAjax('DELETE', "/delete", "id=".concat(id, "&_csrf=").concat(csrf), function () {
+    handleError("You just killed your Domo...");
+    loadDomosFromServer();
+    setTimeout(function () {
+      return $("#domoMessage").animate({
+        width: 'hide'
+      }, 350);
+    }, 2000);
+  });
+  return false;
+};
+
 var DomoForm = function DomoForm(props) {
   return (/*#__PURE__*/React.createElement("form", {
       id: "domoForm",
@@ -39,7 +59,15 @@ var DomoForm = function DomoForm(props) {
       type: "text",
       name: "age",
       placeholder: "Domo Age"
+    }), /*#__PURE__*/React.createElement("label", {
+      htmlFor: "mood"
+    }, "Mood: "), /*#__PURE__*/React.createElement("input", {
+      id: "domoMood",
+      type: "text",
+      name: "mood",
+      placeholder: "Domo Mood"
     }), /*#__PURE__*/React.createElement("input", {
+      id: "csrfToken",
       type: "hidden",
       name: "_csrf",
       value: props.csrf
@@ -73,7 +101,13 @@ var DomoList = function DomoList(props) {
         className: "domoName"
       }, " Name: ", domo.name, " "), /*#__PURE__*/React.createElement("h3", {
         className: "domoAge"
-      }, " Age: ", domo.age, " "))
+      }, " Age: ", domo.age, " "), /*#__PURE__*/React.createElement("h3", {
+        className: "domoMood"
+      }, " Mood: ", domo.mood, " "), /*#__PURE__*/React.createElement("button", {
+        className: "domoDelete",
+        "data-id": domo._id,
+        onClick: deleteDomo
+      }, "Kill"))
     );
   });
   return (/*#__PURE__*/React.createElement("div", {

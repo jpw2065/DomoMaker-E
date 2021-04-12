@@ -21,6 +21,7 @@ const makeDomo = (req, res) => {
   const domoData = {
     name: req.body.name,
     age: req.body.age,
+    mood: req.body.mood,
     owner: req.session.account._id,
   };
 
@@ -43,6 +44,27 @@ const makeDomo = (req, res) => {
   return domoPromise;
 };
 
+const deleteDomo = (req, res) => {
+  if (!req.body.id) {
+    return res.status(400).json({ error: 'RAWR! Domo identification required!' });
+  }
+
+  Domo.DomoModel.findByDomoId(req.body.id, (err, docs) => {
+    const domoId = docs[0]._id;
+
+    docs[0].remove();
+
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }
+
+    return res.json({ domoId });
+  });
+
+  return res;
+};
+
 
 const getDomos = (req, res) => Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
   if (err) {
@@ -56,4 +78,5 @@ const getDomos = (req, res) => Domo.DomoModel.findByOwner(req.session.account._i
 
 module.exports.makerPage = makerPage;
 module.exports.getDomos = getDomos;
+module.exports.deleteDomo = deleteDomo;
 module.exports.make = makeDomo;

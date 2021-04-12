@@ -17,6 +17,12 @@ const DomoSchema = new mongoose.Schema({
     set: setName,
   },
 
+  mood: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+
   age: {
     type: Number,
     min: 0,
@@ -47,7 +53,11 @@ DomoSchema.statics.findByOwner = (ownerId, callback) => {
     owner: convertId(ownerId),
   };
 
-  return DomoModel.find(search).select('name age').lean().exec(callback);
+  return DomoModel.find(search).select('_id name age mood').lean().exec(callback);
+};
+
+DomoSchema.statics.findByDomoId = (domoId, callback) => {
+  DomoModel.find({ _id: convertId(domoId) }).exec(callback);
 };
 
 DomoModel = mongoose.model('Domo', DomoSchema);
